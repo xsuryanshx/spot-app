@@ -1,0 +1,10 @@
+{
+  "id": 555555555,
+  "name": "Evening Walk",
+  "type": "Walk",
+  "sport_type": "Walk",
+  "distance": 3200,
+  "moving_time": 2400,
+  "elapsed_time": 2500,
+  "calories": 180
+}

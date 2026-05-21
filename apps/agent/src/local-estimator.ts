@@ -1,4 +1,5 @@
 import { computeRemaining, computeTotals, fallbackResult } from "./macros.js";
+import { groundLoggedItems } from "./usda.js";
 import type { FoodLogItem, SpotPipelineResult } from "./types.js";
 
 type FoodDefinition = {
@@ -71,7 +72,7 @@ const numbers: Record<string, number> = {
   ten: 10
 };
 
-export function estimateTextLog(text: string, reason?: string): SpotPipelineResult {
+export async function estimateTextLog(text: string, reason?: string): Promise<SpotPipelineResult> {
   const items = foods.flatMap((food) => estimateFood(text, food));
 
   if (items.length === 0) {
@@ -80,17 +81,19 @@ export function estimateTextLog(text: string, reason?: string): SpotPipelineResu
     );
   }
 
-  const totals = computeTotals(items);
+  const parseOnly = items.map(({ food, qty, unit }) => ({ food, qty, unit }));
+  const grounded = await groundLoggedItems(parseOnly);
+  const totals = computeTotals(grounded);
   const remaining = computeRemaining(totals);
 
   return {
-    logged_items: items,
+    logged_items: grounded,
     totals,
     remaining,
     suggestions: buildSuggestions(remaining),
     nudge: reason
-      ? "Estimated locally while RocketRide is offline. Good enough for the demo path."
-      : "Estimated locally.",
+      ? "Parsed locally and grounded on USDA while RocketRide is offline."
+      : "Parsed locally and grounded on USDA.",
     confidence: 0.62,
     source: "fallback"
   };
@@ -102,17 +105,7 @@ function estimateFood(text: string, food: FoodDefinition): FoodLogItem[] {
   if (!alias) return [];
 
   const qty = findQuantity(lower, alias, food);
-  return [
-    {
-      food: alias,
-      qty,
-      unit: food.unit,
-      calories: food.macros.calories * qty,
-      protein: food.macros.protein * qty,
-      carbs: food.macros.carbs * qty,
-      fat: food.macros.fat * qty
-    }
-  ];
+  return [{ food: alias, qty, unit: food.unit }];
 }
 
 function findQuantity(text: string, alias: string, food: FoodDefinition): number {
