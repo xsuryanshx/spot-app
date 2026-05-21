@@ -1,0 +1,69 @@
+{
+  "components": [
+    {
+      "id": "chat_in",
+      "provider": "chat",
+      "config": {
+        "hideForm": true,
+        "mode": "Source",
+        "parameters": {},
+        "type": "chat"
+      }
+    },
+    {
+      "id": "nutrition_prompt",
+      "provider": "prompt",
+      "config": {
+        "instructions": [
+          "You are Spot, an iMessage-native nutrition coach. Parse the user's food log into cautious macro estimates.",
+          "Return only JSON. Do not include Markdown fences or explanatory text.",
+          "Required schema: {\"logged_items\":[{\"food\":\"string\",\"qty\":number,\"unit\":\"string\",\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number}],\"totals\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number},\"remaining\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number},\"suggestions\":[\"string\"],\"nudge\":\"string\",\"confidence\":number,\"clarifying_question\":\"string optional\"}.",
+          "If quantity is unclear, use a common serving size and add clarifying_question. Keep suggestions specific and macro-aware."
+        ]
+      },
+      "input": [
+        {
+          "lane": "questions",
+          "from": "chat_in"
+        }
+      ]
+    },
+    {
+      "id": "gemini_parse",
+      "provider": "llm_gemini",
+      "config": {
+        "profile": "gemini-2_5-flash",
+        "gemini-2_5-flash": {
+          "apikey": "${ROCKETRIDE_GEMINI_APIKEY}"
+        }
+      },
+      "input": [
+        {
+          "lane": "questions",
+          "from": "nutrition_prompt"
+        }
+      ]
+    },
+    {
+      "id": "response",
+      "provider": "response_answers",
+      "config": {
+        "laneName": "spot"
+      },
+      "input": [
+        {
+          "lane": "answers",
+          "from": "gemini_parse"
+        }
+      ]
+    }
+  ],
+  "source": "chat_in",
+  "project_id": "7cf76753-034d-4a52-b4f5-f248e217616c",
+  "viewport": {
+    "x": 0,
+    "y": 0,
+    "zoom": 1
+  },
+  "version": 1
+}
