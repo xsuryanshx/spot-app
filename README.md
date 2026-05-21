@@ -27,7 +27,7 @@ User (iMessage or terminal)
 
 The Spectrum layer stays thin: it routes messages, calls RocketRide once per turn, and formats the reply. Macro math, JSON normalization, and a local food estimator live in TypeScript (`apps/agent/src/`). If RocketRide is down, text logs still work via the built-in fallback estimator.
 
-**Current scope:** text food logs end-to-end. Images and voice notes receive a friendly “coming soon” message until the multimodal pipeline spike lands. See `PLAN.md` for the full milestone roadmap (USDA grounding, Strava, Places, group accountability).
+**Current scope:** text food logs with USDA grounding and **Strava workout credit**. Images and voice notes receive a friendly “coming soon” message until the multimodal pipeline spike lands.
 
 ## Prerequisites
 
@@ -133,6 +133,39 @@ When both Photon and `SPOT_ENABLE_TERMINAL=1` are set, **both** iMessage and ter
 
 The agent loads `.env` from the repo root (`../../.env` relative to `apps/agent`) and from the current working directory.
 
+## Strava integration
+
+Connect Strava so today's workout calories are **added to your daily calorie budget** (remaining macros use the higher target).
+
+### Setup
+
+1. Create an app at [Strava API settings](https://www.strava.com/settings/api).
+2. Set **Authorization Callback Domain** to `localhost` (local dev).
+3. Add to `.env`:
+
+   ```env
+   STRAVA_CLIENT_ID=your_client_id
+   STRAVA_CLIENT_SECRET=your_client_secret
+   STRAVA_REDIRECT_URI=http://localhost:8787/strava/callback
+   SPOT_STRAVA_CALLBACK=1
+   ```
+
+4. Restart the agent (`npm run dev`). You should see: `Strava OAuth callback listening on http://localhost:8787/...`
+
+### Commands (text Spot in iMessage or terminal)
+
+| Message | Action |
+|---------|--------|
+| `strava connect` | Get OAuth link to authorize |
+| `strava status` | Connection + burn + remaining calories |
+| `strava disconnect` | Remove Strava link |
+| `strava code AUTH_CODE` | Manual OAuth if the browser callback did not run |
+| `strava sync` | Optional force-refresh (not required day-to-day) |
+
+After you authorize once, **workouts sync automatically** on every message (throttled to every 5 minutes by default). Log food as usual — macro cards show `Strava credit: +520 cal` when a workout is applied.
+
+**Demo without Strava API:** set `SPOT_DEMO_MODE=1`, then `strava connect` + `strava sync` uses canned run fixtures.
+
 ## Scripts (`apps/agent`)
 
 | Command | Description |
@@ -168,6 +201,9 @@ spot-app/
     │   ├── macros.ts         # JSON parse, totals, remaining
     │   ├── renderers.ts      # iMessage/terminal macro card text
     │   ├── local-estimator.ts# Fallback when RocketRide is unavailable
+    │   ├── usda.ts           # USDA FDC real-time macro lookup
+    │   ├── strava.ts         # Strava OAuth + activity burn
+    │   ├── strava-handlers.ts# strava connect/sync commands
     │   └── check.ts          # Preflight script
     └── test/                 # Vitest unit tests
 ```
@@ -197,7 +233,13 @@ The TypeScript agent loads this file once at startup with `useExisting: true` an
 
 - **Testing:** Pure TypeScript logic is covered by Vitest; pipeline and Spectrum I/O are not integration-tested (see `CLAUDE.md`).
 - **Architecture:** Keep heavy AI in `pipelines/spot.pipe`; extend `macros.ts`, `renderers.ts`, and future modules in `apps/agent/src/` for app-side logic.
-- **Roadmap:** USDA grounding, Strava burn adjustment, Google Places suggestions, and group accountability are documented in `PLAN.md`.
+- **Roadmap:** Google Places suggestions and group accountability are documented in `PLAN.md`.
+
+## Deployment
+
+Spot splits across **RocketRide** (pipeline) and a **Node host** (agent). You cannot run the full iMessage bot on RocketRide alone.
+
+See **[DEPLOY.md](DEPLOY.md)** for RocketRide Cloud, Docker, Fly.io, and production Strava callback setup.
 
 ## Links
 

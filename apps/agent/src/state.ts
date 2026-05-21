@@ -1,18 +1,20 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { computeRemaining, computeTotals, DEFAULT_DAILY_TARGET } from "./macros.js";
+import type { StravaTokens } from "./strava.js";
 import type { FoodLogItem, MacroTotals } from "./types.js";
 
 export type DailyLog = {
   dateKey: string;
   meals: FoodLogItem[][];
   burnCalories: number;
+  stravaSyncedAt?: number;
 };
 
 export type UserProfile = {
   goals: MacroTotals;
   logs: Record<string, DailyLog>;
-  stravaAthleteId?: string;
+  strava?: StravaTokens;
 };
 
 export class UserStateStore {
@@ -49,9 +51,47 @@ export class UserStateStore {
     this.persist();
   }
 
-  linkStrava(userId: string, athleteId: string): void {
+  setStrava(userId: string, tokens: StravaTokens): void {
     const profile = this.ensureProfile(userId);
-    profile.stravaAthleteId = athleteId;
+    profile.strava = tokens;
+    this.persist();
+  }
+
+  getStrava(userId: string): StravaTokens | undefined {
+    return this.ensureProfile(userId).strava;
+  }
+
+  clearStrava(userId: string): void {
+    const profile = this.ensureProfile(userId);
+    profile.strava = undefined;
+    const day = this.dayKey();
+    const log = profile.logs[day];
+    if (log) log.burnCalories = 0;
+    this.persist();
+  }
+
+  getBurn(userId: string): number {
+    return this.ensureProfile(userId).logs[this.dayKey()]?.burnCalories ?? 0;
+  }
+
+  isStravaLinked(userId: string): boolean {
+    return Boolean(this.getStrava(userId));
+  }
+
+  shouldSyncStrava(userId: string, intervalMs: number, force = false): boolean {
+    if (!this.isStravaLinked(userId)) return false;
+    if (force) return true;
+    const log = this.ensureProfile(userId).logs[this.dayKey()];
+    if (!log?.stravaSyncedAt) return true;
+    return Date.now() - log.stravaSyncedAt >= intervalMs;
+  }
+
+  markStravaSynced(userId: string): void {
+    const profile = this.ensureProfile(userId);
+    const day = this.dayKey();
+    const log = profile.logs[day] ?? { dateKey: day, meals: [], burnCalories: 0 };
+    log.stravaSyncedAt = Date.now();
+    profile.logs[day] = log;
     this.persist();
   }
 

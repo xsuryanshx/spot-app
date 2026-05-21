@@ -27,21 +27,20 @@
       "provider": "prompt",
       "config": {
         "instructions": [
-          "You are Spot, an iMessage-native nutrition coach. Parse the user's food log into structured items only.",
+          "You are Spot, an iMessage-native nutrition coach. Parse the user's food log into cautious macro estimates.",
           "Return only JSON. Do not include Markdown fences or explanatory text.",
-          "Required schema: {\"logged_items\":[{\"food\":\"string\",\"qty\":number,\"unit\":\"string\"}],\"suggestions\":[\"string\"],\"nudge\":\"string\",\"confidence\":number,\"clarifying_question\":\"string optional\"}.",
-          "Do NOT include calories, protein, carbs, fat, totals, or remaining — the Spectrum agent fetches macros from USDA FoodData Central in real time.",
-          "If quantity is unclear, use a common serving size and add clarifying_question."
+          "Required schema: {\"logged_items\":[{\"food\":\"string\",\"qty\":number,\"unit\":\"string\",\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number}],\"totals\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number},\"remaining\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number},\"suggestions\":[\"string\"],\"nudge\":\"string\",\"confidence\":number,\"clarifying_question\":\"string optional\"}.",
+          "If quantity is unclear, use a common serving size and add clarifying_question. Keep suggestions specific and macro-aware."
         ]
       },
       "ui": {
         "position": {
-          "x": -107.25199999999995,
-          "y": -39.19999999999998
+          "x": -84.78799999999997,
+          "y": -83.26399999999998
         },
         "measured": {
           "width": 150,
-          "height": 119
+          "height": 140
         },
         "nodeType": "default",
         "formDataValid": true
@@ -69,7 +68,7 @@
         },
         "measured": {
           "width": 150,
-          "height": 66
+          "height": 88
         },
         "nodeType": "default",
         "formDataValid": true
@@ -115,5 +114,5 @@
     "zoom": 1.1574074074074077
   },
   "version": 1,
-  "docRevision": 11
+  "docRevision": 12
 }

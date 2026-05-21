@@ -1,4 +1,5 @@
 import { computeRemaining, computeTotals, fallbackResult } from "./macros.js";
+import { parseFoodText } from "./text-parser.js";
 import { groundLoggedItems } from "./usda.js";
 import type { FoodLogItem, SpotPipelineResult } from "./types.js";
 
@@ -73,16 +74,25 @@ const numbers: Record<string, number> = {
 };
 
 export async function estimateTextLog(text: string, reason?: string): Promise<SpotPipelineResult> {
-  const items = foods.flatMap((food) => estimateFood(text, food));
+  const aliasItems = foods.flatMap((food) => estimateFood(text, food));
+  const parsedItems = aliasItems.length > 0 ? aliasItems : parseFoodText(text);
 
-  if (items.length === 0) {
+  if (parsedItems.length === 0) {
     return fallbackResult(
-      reason ? `RocketRide is not ready yet, and I could not estimate that locally: ${reason}` : "I could not estimate that locally."
+      reason
+        ? "RocketRide is offline. Start the RocketRide server on port 5565, or send food like: 2 eggs, oatmeal, chicken breast."
+        : "I could not parse that food log. Try: 2 eggs and oatmeal."
     );
   }
 
-  const parseOnly = items.map(({ food, qty, unit }) => ({ food, qty, unit }));
+  const parseOnly = parsedItems.map(({ food, qty, unit }) => ({ food, qty, unit }));
   const grounded = await groundLoggedItems(parseOnly);
+  const ungrounded = grounded.filter((item) => !item.calories && !item.protein);
+  if (ungrounded.length === grounded.length) {
+    return fallbackResult(
+      `Could not find USDA data for: ${ungrounded.map((i) => i.food).join(", ")}. Try simpler names (e.g. eggs, chicken breast, rice).`
+    );
+  }
   const totals = computeTotals(grounded);
   const remaining = computeRemaining(totals);
 
@@ -92,7 +102,7 @@ export async function estimateTextLog(text: string, reason?: string): Promise<Sp
     remaining,
     suggestions: buildSuggestions(remaining),
     nudge: reason
-      ? "Parsed locally and grounded on USDA while RocketRide is offline."
+      ? "RocketRide offline — parsed your log and grounded macros via USDA."
       : "Parsed locally and grounded on USDA.",
     confidence: 0.62,
     source: "fallback"

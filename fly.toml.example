@@ -1,0 +1,27 @@
+# Rename to fly.toml and run: fly launch / fly deploy
+app = "spot-agent"
+primary_region = "sea"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  SPOT_PIPELINE_PATH = "../../pipelines/spot.pipe"
+  SPOT_STATE_PATH = "/data/.spot-state.json"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    path = "/health"
+    interval = "30s"
+    timeout = "5s"
+
+[[mounts]]
+  source = "spot_state"
+  destination = "/data"

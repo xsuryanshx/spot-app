@@ -5,6 +5,8 @@ import { terminal } from "spectrum-ts/providers/terminal";
 import { toPipelineTurn } from "./payload.js";
 import { runPipeline } from "./pipeline.js";
 import { renderMacroCard } from "./renderers.js";
+import { startStravaCallbackServer } from "./strava-callback.js";
+import { autoSyncStravaIfLinked, handleStravaCommand } from "./strava-handlers.js";
 
 const providers = [];
 
@@ -26,6 +28,7 @@ const app =
     : await Spectrum({ providers });
 
 console.log(`Spot agent listening on ${providers.length} Spectrum provider(s).`);
+startStravaCallbackServer();
 
 for await (const [space, message] of app.messages) {
   if (process.env.PHOTON_ACCOUNT_ID && message.sender.id === process.env.PHOTON_ACCOUNT_ID) {
@@ -34,7 +37,17 @@ for await (const [space, message] of app.messages) {
 
   await app.responding(space, async () => {
     const turn = toPipelineTurn(message, space);
-    const result = await runPipeline(turn);
+
+    if (turn.kind === "text" && turn.text) {
+      const stravaReply = await handleStravaCommand(turn.userId, turn.text);
+      if (stravaReply) {
+        await space.send(stravaReply.reply);
+        return;
+      }
+    }
+
+    const stravaNote = await autoSyncStravaIfLinked(turn.userId);
+    const result = await runPipeline(turn, { stravaNote });
     await space.send(renderMacroCard(result));
   });
 }

@@ -24,6 +24,8 @@ export type SpotPipelineResult = {
   confidence: number;
   clarifying_question?: string;
   source: "rocketride" | "fallback";
+  strava_burn?: number;
+  strava_note?: string;
 };
 
 export type PipelineTurn = {

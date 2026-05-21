@@ -10,13 +10,29 @@ import type { PipelineTurn, SpotPipelineResult } from "./types.js";
 let clientPromise: Promise<RocketRideClient> | undefined;
 let tokenPromise: Promise<string> | undefined;
 
-export async function runPipeline(turn: PipelineTurn): Promise<SpotPipelineResult> {
+export async function runPipeline(
+  turn: PipelineTurn,
+  options?: { stravaNote?: string }
+): Promise<SpotPipelineResult> {
   if (turn.kind !== "text") {
-    return fallbackResult("Photo and voice handling are queued for the multimodal RocketRide spike.");
+    return enrichWithUsdaAndState(
+      fallbackResult("Photo and voice handling are queued for the multimodal RocketRide spike."),
+      turn.userId,
+      options?.stravaNote
+    );
   }
 
   if (!turn.text) {
-    return fallbackResult("I need a little food detail before I can log macros.");
+    return enrichWithUsdaAndState(
+      fallbackResult("I need a little food detail before I can log macros."),
+      turn.userId,
+      options?.stravaNote
+    );
+  }
+
+  if (process.env.SPOT_SKIP_ROCKETRIDE === "1") {
+    const estimated = await estimateTextLog(turn.text);
+    return enrichWithUsdaAndState(estimated, turn.userId, options?.stravaNote);
   }
 
   try {
@@ -25,13 +41,19 @@ export async function runPipeline(turn: PipelineTurn): Promise<SpotPipelineResul
     const question = buildNutritionQuestion(turn);
     const raw = await client.chat({ token, question });
     const parsed = normalizePipelineResult(raw);
-    return enrichWithUsdaAndState(parsed, turn.userId);
+    return enrichWithUsdaAndState(parsed, turn.userId, options?.stravaNote);
   } catch (error) {
+    resetRocketRideClient();
     const message = error instanceof Error ? error.message : "Unknown RocketRide error";
-    console.warn(`RocketRide unavailable; using local estimator. ${message}`);
+    console.warn(`RocketRide unavailable; using USDA offline path. ${message}`);
     const estimated = await estimateTextLog(turn.text, message);
-    return enrichWithUsdaAndState(estimated, turn.userId);
+    return enrichWithUsdaAndState(estimated, turn.userId, options?.stravaNote);
   }
+}
+
+function resetRocketRideClient(): void {
+  clientPromise = undefined;
+  tokenPromise = undefined;
 }
 
 export function resolvePipelinePath(): string {
