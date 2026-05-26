@@ -1,0 +1,295 @@
+{
+  "terminal-user": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [
+          [
+            {
+              "food": "Oil, oat",
+              "qty": 1,
+              "unit": "cup cooked",
+              "calories": 3700,
+              "protein": 0,
+              "carbs": 0,
+              "fat": 100
+            }
+          ],
+          [
+            {
+              "food": "Eggs, Grade A, Large, egg white",
+              "qty": 2,
+              "unit": "large",
+              "calories": 110,
+              "protein": 22,
+              "carbs": 4,
+              "fat": 0
+            },
+            {
+              "food": "Bread, oatmeal",
+              "qty": 1,
+              "unit": "cup cooked",
+              "calories": 269,
+              "protein": 8,
+              "carbs": 49,
+              "fat": 4
+            }
+          ],
+          [
+            {
+              "food": "Chicken spread",
+              "qty": 1,
+              "unit": "serving",
+              "calories": 158,
+              "protein": 18,
+              "carbs": 4,
+              "fat": 18
+            }
+          ],
+          [
+            {
+              "food": "Eggs, Grade A, Large, egg white",
+              "qty": 2,
+              "unit": "large",
+              "calories": 110,
+              "protein": 22,
+              "carbs": 4,
+              "fat": 0
+            }
+          ]
+        ],
+        "burnCalories": 0
+      }
+    }
+  },
+  "runner-1779395357866": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779398957
+    }
+  },
+  "runner-1779395586271": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520,
+        "stravaSyncedAt": 1779395586272
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779399186
+    }
+  },
+  "runner-auto-1779395586273": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520,
+        "stravaSyncedAt": 1779395586274
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779399186
+    }
+  },
+  "runner-1779395634719": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520,
+        "stravaSyncedAt": 1779395634720
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779399234
+    }
+  },
+  "runner-auto-1779395634724": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520,
+        "stravaSyncedAt": 1779395634727
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779399234
+    }
+  },
+  "runner-1779396099197": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520,
+        "stravaSyncedAt": 1779396099199
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779399699
+    }
+  },
+  "runner-auto-1779396099199": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520,
+        "stravaSyncedAt": 1779396099200
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779399699
+    }
+  },
+  "runner-1779396318398": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520,
+        "stravaSyncedAt": 1779396318401
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779399918
+    }
+  },
+  "runner-auto-1779396318402": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [],
+        "burnCalories": 520,
+        "stravaSyncedAt": 1779396318404
+      }
+    },
+    "strava": {
+      "athleteId": 42,
+      "accessToken": "demo-token",
+      "refreshToken": "demo-refresh",
+      "expiresAt": 1779399918
+    }
+  },
+  "+12067739806": {
+    "goals": {
+      "calories": 2200,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 70
+    },
+    "logs": {
+      "2026-05-21": {
+        "dateKey": "2026-05-21",
+        "meals": [
+          [
+            {
+              "food": "Cocoa, dry powder, hi-fat or breakfast, processed with alkali",
+              "qty": 1,
+              "unit": "serving",
+              "calories": 479,
+              "protein": 17,
+              "carbs": 50,
+              "fat": 24
+            }
+          ]
+        ],
+        "burnCalories": 0
+      }
+    }
+  }
+}

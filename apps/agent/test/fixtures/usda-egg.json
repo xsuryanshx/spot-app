@@ -1,0 +1,10 @@
+{
+  "fdcId": 748967,
+  "description": "Egg, whole, raw, fresh",
+  "foodNutrients": [
+    { "nutrientName": "Energy", "unitName": "KCAL", "value": 143 },
+    { "nutrientName": "Protein", "unitName": "G", "value": 12.6 },
+    { "nutrientName": "Carbohydrate, by difference", "unitName": "G", "value": 0.72 },
+    { "nutrientName": "Total lipid (fat)", "unitName": "G", "value": 9.51 }
+  ]
+}

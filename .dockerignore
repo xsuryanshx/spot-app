@@ -1,0 +1,12 @@
+node_modules
+apps/agent/node_modules
+.env
+.spot-state.json
+.git
+.cursor
+.claude
+**/*.test.ts
+**/test
+PLAN.md
+README.md
+DEPLOY.md

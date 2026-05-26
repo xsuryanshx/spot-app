@@ -8,6 +8,18 @@
         "mode": "Source",
         "parameters": {},
         "type": "chat"
+      },
+      "ui": {
+        "position": {
+          "x": -303.248,
+          "y": -27.459999999999997
+        },
+        "measured": {
+          "width": 150,
+          "height": 126
+        },
+        "nodeType": "default",
+        "formDataValid": true
       }
     },
     {
@@ -20,6 +32,18 @@
           "Required schema: {\"logged_items\":[{\"food\":\"string\",\"qty\":number,\"unit\":\"string\",\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number}],\"totals\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number},\"remaining\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fat\":number},\"suggestions\":[\"string\"],\"nudge\":\"string\",\"confidence\":number,\"clarifying_question\":\"string optional\"}.",
           "If quantity is unclear, use a common serving size and add clarifying_question. Keep suggestions specific and macro-aware."
         ]
+      },
+      "ui": {
+        "position": {
+          "x": -84.78799999999997,
+          "y": -83.26399999999998
+        },
+        "measured": {
+          "width": 150,
+          "height": 140
+        },
+        "nodeType": "default",
+        "formDataValid": true
       },
       "input": [
         {
@@ -37,6 +61,18 @@
           "apikey": "${ROCKETRIDE_GEMINI_APIKEY}"
         }
       },
+      "ui": {
+        "position": {
+          "x": 86.08799999999995,
+          "y": 6.887999999999934
+        },
+        "measured": {
+          "width": 150,
+          "height": 88
+        },
+        "nodeType": "default",
+        "formDataValid": true
+      },
       "input": [
         {
           "lane": "questions",
@@ -50,6 +86,18 @@
       "config": {
         "laneName": "spot"
       },
+      "ui": {
+        "position": {
+          "x": 259.948,
+          "y": 12.100000000000001
+        },
+        "measured": {
+          "width": 150,
+          "height": 66
+        },
+        "nodeType": "default",
+        "formDataValid": true
+      },
       "input": [
         {
           "lane": "answers",
@@ -61,9 +109,10 @@
   "source": "chat_in",
   "project_id": "7cf76753-034d-4a52-b4f5-f248e217616c",
   "viewport": {
-    "x": 0,
-    "y": 0,
-    "zoom": 1
+    "x": 411.19444444444446,
+    "y": 377.63425925925924,
+    "zoom": 1.1574074074074077
   },
-  "version": 1
+  "version": 1,
+  "docRevision": 12
 }

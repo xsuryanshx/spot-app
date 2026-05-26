@@ -1,4 +1,6 @@
 import { computeRemaining, computeTotals, fallbackResult } from "./macros.js";
+import { parseFoodText } from "./text-parser.js";
+import { groundLoggedItems } from "./usda.js";
 import type { FoodLogItem, SpotPipelineResult } from "./types.js";
 
 type FoodDefinition = {
@@ -71,26 +73,37 @@ const numbers: Record<string, number> = {
   ten: 10
 };
 
-export function estimateTextLog(text: string, reason?: string): SpotPipelineResult {
-  const items = foods.flatMap((food) => estimateFood(text, food));
+export async function estimateTextLog(text: string, reason?: string): Promise<SpotPipelineResult> {
+  const aliasItems = foods.flatMap((food) => estimateFood(text, food));
+  const parsedItems = aliasItems.length > 0 ? aliasItems : parseFoodText(text);
 
-  if (items.length === 0) {
+  if (parsedItems.length === 0) {
     return fallbackResult(
-      reason ? `RocketRide is not ready yet, and I could not estimate that locally: ${reason}` : "I could not estimate that locally."
+      reason
+        ? "RocketRide is offline. Start the RocketRide server on port 5565, or send food like: 2 eggs, oatmeal, chicken breast."
+        : "I could not parse that food log. Try: 2 eggs and oatmeal."
     );
   }
 
-  const totals = computeTotals(items);
+  const parseOnly = parsedItems.map(({ food, qty, unit }) => ({ food, qty, unit }));
+  const grounded = await groundLoggedItems(parseOnly);
+  const ungrounded = grounded.filter((item) => !item.calories && !item.protein);
+  if (ungrounded.length === grounded.length) {
+    return fallbackResult(
+      `Could not find USDA data for: ${ungrounded.map((i) => i.food).join(", ")}. Try simpler names (e.g. eggs, chicken breast, rice).`
+    );
+  }
+  const totals = computeTotals(grounded);
   const remaining = computeRemaining(totals);
 
   return {
-    logged_items: items,
+    logged_items: grounded,
     totals,
     remaining,
     suggestions: buildSuggestions(remaining),
     nudge: reason
-      ? "Estimated locally while RocketRide is offline. Good enough for the demo path."
-      : "Estimated locally.",
+      ? "RocketRide offline — parsed your log and grounded macros via USDA."
+      : "Parsed locally and grounded on USDA.",
     confidence: 0.62,
     source: "fallback"
   };
@@ -102,17 +115,7 @@ function estimateFood(text: string, food: FoodDefinition): FoodLogItem[] {
   if (!alias) return [];
 
   const qty = findQuantity(lower, alias, food);
-  return [
-    {
-      food: alias,
-      qty,
-      unit: food.unit,
-      calories: food.macros.calories * qty,
-      protein: food.macros.protein * qty,
-      carbs: food.macros.carbs * qty,
-      fat: food.macros.fat * qty
-    }
-  ];
+  return [{ food: alias, qty, unit: food.unit }];
 }
 
 function findQuantity(text: string, alias: string, food: FoodDefinition): number {

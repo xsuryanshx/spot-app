@@ -1,0 +1,7 @@
+[
+  { "food": "eggs", "qty": 2, "unit": "large" },
+  { "food": "oatmeal", "qty": 1, "unit": "cup cooked" },
+  { "food": "banana", "qty": 1, "unit": "medium" },
+  { "food": "chicken breast", "qty": 1, "unit": "serving" },
+  { "food": "rice", "qty": 1, "unit": "cup cooked" }
+]

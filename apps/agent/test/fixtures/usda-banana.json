@@ -1,0 +1,10 @@
+{
+  "fdcId": 173944,
+  "description": "Bananas, raw",
+  "foodNutrients": [
+    { "nutrientName": "Energy", "unitName": "KCAL", "value": 89 },
+    { "nutrientName": "Protein", "unitName": "G", "value": 1.09 },
+    { "nutrientName": "Carbohydrate, by difference", "unitName": "G", "value": 22.8 },
+    { "nutrientName": "Total lipid (fat)", "unitName": "G", "value": 0.33 }
+  ]
+}

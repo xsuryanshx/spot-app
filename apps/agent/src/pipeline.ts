@@ -2,6 +2,7 @@ import "./env.js";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { Question, RocketRideClient } from "rocketride";
+import { enrichWithUsdaAndState } from "./enrich.js";
 import { estimateTextLog } from "./local-estimator.js";
 import { fallbackResult, normalizePipelineResult } from "./macros.js";
 import type { PipelineTurn, SpotPipelineResult } from "./types.js";
@@ -9,13 +10,29 @@ import type { PipelineTurn, SpotPipelineResult } from "./types.js";
 let clientPromise: Promise<RocketRideClient> | undefined;
 let tokenPromise: Promise<string> | undefined;
 
-export async function runPipeline(turn: PipelineTurn): Promise<SpotPipelineResult> {
+export async function runPipeline(
+  turn: PipelineTurn,
+  options?: { stravaNote?: string }
+): Promise<SpotPipelineResult> {
   if (turn.kind !== "text") {
-    return fallbackResult("Photo and voice handling are queued for the multimodal RocketRide spike.");
+    return enrichWithUsdaAndState(
+      fallbackResult("Photo and voice handling are queued for the multimodal RocketRide spike."),
+      turn.userId,
+      options?.stravaNote
+    );
   }
 
   if (!turn.text) {
-    return fallbackResult("I need a little food detail before I can log macros.");
+    return enrichWithUsdaAndState(
+      fallbackResult("I need a little food detail before I can log macros."),
+      turn.userId,
+      options?.stravaNote
+    );
+  }
+
+  if (process.env.SPOT_SKIP_ROCKETRIDE === "1") {
+    const estimated = await estimateTextLog(turn.text);
+    return enrichWithUsdaAndState(estimated, turn.userId, options?.stravaNote);
   }
 
   try {
@@ -23,12 +40,20 @@ export async function runPipeline(turn: PipelineTurn): Promise<SpotPipelineResul
     const token = await getToken(client);
     const question = buildNutritionQuestion(turn);
     const raw = await client.chat({ token, question });
-    return normalizePipelineResult(raw);
+    const parsed = normalizePipelineResult(raw);
+    return enrichWithUsdaAndState(parsed, turn.userId, options?.stravaNote);
   } catch (error) {
+    resetRocketRideClient();
     const message = error instanceof Error ? error.message : "Unknown RocketRide error";
-    console.warn(`RocketRide unavailable; using local estimator. ${message}`);
-    return estimateTextLog(turn.text, message);
+    console.warn(`RocketRide unavailable; using USDA offline path. ${message}`);
+    const estimated = await estimateTextLog(turn.text, message);
+    return enrichWithUsdaAndState(estimated, turn.userId, options?.stravaNote);
   }
+}
+
+function resetRocketRideClient(): void {
+  clientPromise = undefined;
+  tokenPromise = undefined;
 }
 
 export function resolvePipelinePath(): string {
@@ -58,22 +83,20 @@ function getToken(client: RocketRideClient): Promise<string> {
 
 function buildNutritionQuestion(turn: PipelineTurn): Question {
   const question = new Question({ expectJson: true });
-  question.addGoal("Return only structured nutrition JSON for the Spot iMessage coach.");
+  question.addGoal("Parse the user's food log into structured items only. Do NOT estimate calories or macros.");
   question.addInstruction(
     "Schema",
-    "Return JSON with logged_items, totals, remaining, suggestions, nudge, confidence, and optional clarifying_question. Macro keys are calories, protein, carbs, and fat."
+    "Return JSON with logged_items (food, qty, unit only — no macro fields), suggestions, nudge, confidence, and optional clarifying_question. Omit totals and remaining; the agent fetches macros from USDA FoodData Central in real time."
   );
   question.addInstruction(
-    "Grounding",
-    "Estimate cautiously when USDA lookup is unavailable. If quantity is ambiguous, log the safest common serving and include a clarifying_question."
+    "Parsing",
+    "Use common USDA-searchable food names (e.g. 'eggs', 'oatmeal', 'chicken breast'). If quantity is ambiguous, use a common serving and add clarifying_question."
   );
   question.addExample("2 eggs and a cup of oatmeal", {
     logged_items: [
-      { food: "eggs", qty: 2, unit: "large", calories: 140, protein: 12, carbs: 1, fat: 10 },
-      { food: "oatmeal", qty: 1, unit: "cup cooked", calories: 154, protein: 6, carbs: 27, fat: 3 }
+      { food: "eggs", qty: 2, unit: "large" },
+      { food: "oatmeal", qty: 1, unit: "cup cooked" }
     ],
-    totals: { calories: 294, protein: 18, carbs: 28, fat: 13 },
-    remaining: { calories: 1906, protein: 132, carbs: 192, fat: 57 },
     suggestions: ["Add Greek yogurt or chicken later to close the protein gap."],
     nudge: "Good base. Protein is still the main thing to chase today.",
     confidence: 0.78

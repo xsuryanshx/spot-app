@@ -1,0 +1,10 @@
+{
+  "fdcId": 2346384,
+  "description": "Oats, cooked, plain",
+  "foodNutrients": [
+    { "nutrientName": "Energy", "unitName": "KCAL", "value": 154 },
+    { "nutrientName": "Protein", "unitName": "G", "value": 5.98 },
+    { "nutrientName": "Carbohydrate, by difference", "unitName": "G", "value": 26.6 },
+    { "nutrientName": "Total lipid (fat)", "unitName": "G", "value": 2.59 }
+  ]
+}

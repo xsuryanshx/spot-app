@@ -1,6 +1,7 @@
 import "./env.js";
 import { existsSync } from "node:fs";
 import { resolvePipelinePath } from "./pipeline.js";
+import { isStravaConfigured } from "./strava.js";
 
 const required = ["ROCKETRIDE_URI", "ROCKETRIDE_APIKEY", "ROCKETRIDE_GEMINI_APIKEY"];
 const missing = required.filter((key) => !process.env[key]);
@@ -13,6 +14,7 @@ console.log(
       ok: missing.length === 0 && existsSync(pipelinePath),
       missing,
       photonReady,
+      stravaReady: isStravaConfigured(),
       pipelinePath,
       pipelineExists: existsSync(pipelinePath)
     },

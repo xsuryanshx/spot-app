@@ -12,6 +12,11 @@ export function renderMacroCard(result: SpotPipelineResult): string {
     ? `\n\nNext:\n${result.suggestions.map((suggestion) => `- ${suggestion}`).join("\n")}`
     : "";
 
+  const stravaLine =
+    result.strava_burn && result.strava_burn > 0
+      ? `Strava credit: +${result.strava_burn} cal`
+      : undefined;
+
   return [
     "Spot",
     "",
@@ -20,6 +25,8 @@ export function renderMacroCard(result: SpotPipelineResult): string {
     "",
     `Meal: ${renderTotals(result.totals)}`,
     `Left today: ${renderTotals(result.remaining)}`,
+    stravaLine,
+    result.strava_note,
     "",
     result.nudge,
     suggestions

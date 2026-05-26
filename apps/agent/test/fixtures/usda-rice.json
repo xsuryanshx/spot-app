@@ -1,0 +1,10 @@
+{
+  "fdcId": 168878,
+  "description": "Rice, white, cooked",
+  "foodNutrients": [
+    { "nutrientName": "Energy", "unitName": "KCAL", "value": 130 },
+    { "nutrientName": "Protein", "unitName": "G", "value": 2.69 },
+    { "nutrientName": "Carbohydrate, by difference", "unitName": "G", "value": 28.2 },
+    { "nutrientName": "Total lipid (fat)", "unitName": "G", "value": 0.28 }
+  ]
+}
